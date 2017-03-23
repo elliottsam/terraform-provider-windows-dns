@@ -8,22 +8,22 @@ import (
 // Utilises Powershell to connect to domain controller
 func Provider() *schema.Provider {
 	return &schema.Provider{
-		Schema: map[string]*schema.Schema {
+		Schema: map[string]*schema.Schema{
 			"server_name": {
-				Type: schema.TypeString,
-				Required: true,
-				DefaultFunc: schema.EnvDefaultFunc("WINRM_SERVER",nil),
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("WINRM_SERVER", nil),
 			},
 
 			"username": {
-				Type: schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("WINRM_USERNAME", nil),
 			},
 
 			"password": {
-				Type: schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("WINRM_PASSWORD", nil),
 			},
 		},
@@ -37,10 +37,11 @@ func Provider() *schema.Provider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+
 	config := Config{
 		ServerName: d.Get("server_name").(string),
-		Username: d.Get("username").(string),
-		Password: d.Get("password").(string),
+		Username:   d.Get("username").(string),
+		Password:   d.Get("password").(string),
 	}
 
 	return config.Client()
