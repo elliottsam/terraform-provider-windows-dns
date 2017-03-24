@@ -29,7 +29,7 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"windows_dns": resourceDNSRecord(),
+			"windows-dns_record": resourceDNSRecord(),
 		},
 
 		ConfigureFunc: providerConfigure,
@@ -38,7 +38,7 @@ func Provider() *schema.Provider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
-	config := Config{
+	config := config{
 		ServerName: d.Get("server_name").(string),
 		Username:   d.Get("username").(string),
 		Password:   d.Get("password").(string),

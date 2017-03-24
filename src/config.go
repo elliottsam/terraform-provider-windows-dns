@@ -4,22 +4,14 @@ import (
 	"github.com/elliottsam/winrm-dns-client/dns"
 )
 
-type Config struct {
+type config struct {
 	ServerName string
 	Username   string
 	Password   string
 }
 
-type Record struct {
-	Dnszone string
-	Name    string
-	Type    string
-	Value   string
-	TTL     int
-}
-
-// Configures the WinRM endpoint for managing Microsoft DNS
-func (c *Config) Client() (*dns.Client, error) {
+// Client configures the WinRM endpoint for managing Microsoft DNS
+func (c *config) Client() (*dns.Client, error) {
 	client := dns.Client{
 		ServerName: c.ServerName,
 		Username:   c.Username,
