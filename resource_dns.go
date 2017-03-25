@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/elliottsam/winrm-dns-client/dns"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -26,19 +27,22 @@ func resourceDNSRecord() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"type": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"value": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
 			"ttl": &schema.Schema{
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "TTL in seconds",
+				Description: "TTL as a duration",
+				Default:     "15m",
 			},
 			"fqdn": &schema.Schema{
 				Type:     schema.TypeString,
@@ -53,11 +57,17 @@ func resourceDNSRecordCreate(d *schema.ResourceData, m interface{}) error {
 	defer mutex.Unlock()
 	client := m.(*dns.Client)
 
+	ttl, err := time.ParseDuration(d.Get("ttl").(string))
+	if err != nil {
+		return fmt.Errorf("Invalid time duration: %v", err)
+	}
+
 	rec := dns.Record{
 		Dnszone: d.Get("domain").(string),
 		Name:    d.Get("name").(string),
 		Type:    d.Get("type").(string),
 		Value:   d.Get("value").(string),
+		TTL:     ttl.Seconds(),
 	}
 
 	resp, err := client.CreateRecord(rec)
@@ -99,12 +109,17 @@ func resourceDNSRecordRead(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	ttl, err := time.ParseDuration(fmt.Sprintf("%vs", rec.TTL))
+	if err != nil {
+		fmt.Errorf("Invalid time duration: %v", err)
+	}
+
 	d.Set("domain", rec.Dnszone)
 	d.Set("fqdn", fmt.Sprintf("%s.%s", rec.Name, rec.Dnszone))
 	d.Set("name", rec.Name)
 	d.Set("type", rec.Type)
 	d.Set("value", rec.Value)
-	d.Set("ttl", rec.TTL)
+	d.Set("ttl", ttl.String())
 
 	return nil
 }
@@ -113,24 +128,31 @@ func resourceDNSRecordUpdate(d *schema.ResourceData, m interface{}) error {
 	mutex.Lock()
 	defer mutex.Unlock()
 	var (
+		err      error
 		newValue string
-		newTTL   int64
+		newTTL   time.Duration
 	)
 	client := m.(*dns.Client)
 
-	rec, err := client.ReadRecordfromID(d.Get("Id").(string))
+	rec, err := client.ReadRecordfromID(d.Id())
 	if err != nil {
 		return fmt.Errorf("Error reading record: %v", err)
 	}
 
-	if d.Get("value").(string) != rec.Value {
+	oldval, newval := d.GetChange("value")
+	if oldval != newval {
 		newValue = d.Get("value").(string)
 	}
-	if d.Get("ttl").(int64) != rec.TTL {
-		newTTL = d.Get("value").(int64)
+
+	oldval, newval = d.GetChange("ttl")
+	if oldval != newval {
+		newTTL, err = time.ParseDuration(d.Get("ttl").(string))
+		if err != nil {
+			return fmt.Errorf("Invalid time duration: %v", err)
+		}
 	}
 
-	rec, err = client.UpdateRecord(rec, newValue, newTTL)
+	rec, err = client.UpdateRecord(rec, newValue, newTTL.Seconds())
 	if err != nil {
 		return fmt.Errorf("Error updating record: %v", err)
 	}
