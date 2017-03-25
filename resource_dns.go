@@ -42,7 +42,7 @@ func resourceDNSRecord() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "TTL as a duration",
-				Default:     "15m",
+				Default:     "15m0s",
 			},
 			"fqdn": &schema.Schema{
 				Type:     schema.TypeString,
