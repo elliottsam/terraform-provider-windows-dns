@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestWinDNSRecord_Basic(t *testing.T) {
+func TestWinDNS_A_Record_Basic(t *testing.T) {
 	var record dns.Record
 	domain := os.Getenv("WINRM_DOMAIN")
 
@@ -20,23 +20,20 @@ func TestWinDNSRecord_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckWinDNSRecordDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: fmt.Sprintf(testAccCheckWinDNSRecordConfig_basic, domain),
+				Config: fmt.Sprintf(testAccCheckWinDNSARecordConfig_basic, domain),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckWinDNSRecordExists("windows-dns_record.foobar", &record),
-					testAccCheckWinDNSRecordAttributes(&record),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "name", "terraform"),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "domain", domain),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "value", "10.99.0.10"),
+					testAccCheckWinDNSARecordAttributes(&record),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "name", "terraform"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "value", "10.99.0.10"),
 				),
 			},
 		},
 	})
 }
 
-func TestAccWinDNSRecord_Updated(t *testing.T) {
+func TestAccWinDNS_A_Record_Updated(t *testing.T) {
 	var record dns.Record
 	domain := os.Getenv("WINRM_DOMAIN")
 
@@ -46,29 +43,79 @@ func TestAccWinDNSRecord_Updated(t *testing.T) {
 		CheckDestroy: testAccCheckWinDNSRecordDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: fmt.Sprintf(testAccCheckWinDNSRecordConfig_basic, domain),
+				Config: fmt.Sprintf(testAccCheckWinDNSARecordConfig_basic, domain),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckWinDNSRecordExists("windows-dns_record.foobar", &record),
-					testAccCheckWinDNSRecordAttributes(&record),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "name", "terraform"),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "domain", domain),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "value", "10.99.0.10"),
+					testAccCheckWinDNSARecordAttributes(&record),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "name", "terraform"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "value", "10.99.0.10"),
 				),
 			},
 			{
-				Config: fmt.Sprintf(testAccCheckWinDNSRecordConfig_new_value, domain),
+				Config: fmt.Sprintf(testAccCheckWinDNSARecordConfig_new_value, domain),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckWinDNSRecordExists("windows-dns_record.foobar", &record),
-					testAccCheckWinDNSRecordAttributesUpdated(&record),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "name", "terraform"),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "domain", domain),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar", "value", "10.99.99.99"),
+					testAccCheckWinDNSARecordAttributesUpdated(&record),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "name", "terraform"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "value", "10.99.99.99"),
+				),
+			},
+		},
+	})
+}
+
+func TestWinDNS_CNAME_Record_Basic(t *testing.T) {
+	var record dns.Record
+	domain := os.Getenv("WINRM_DOMAIN")
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckWinDNSRecordDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: fmt.Sprintf(testAccCheckWinDNSCNAMERecordConfig_basic, domain),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckWinDNSRecordExists("windows-dns_record.foobar", &record),
+					testAccCheckWinDNSCNAMERecordAttributes(&record),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "name", "terraform"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "value", "foo.test.local."),
+				),
+			},
+		},
+	})
+}
+
+func TestWinDNS_CNAME_Record_Updated(t *testing.T) {
+	var record dns.Record
+	domain := os.Getenv("WINRM_DOMAIN")
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckWinDNSRecordDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: fmt.Sprintf(testAccCheckWinDNSCNAMERecordConfig_basic, domain),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckWinDNSRecordExists("windows-dns_record.foobar", &record),
+					testAccCheckWinDNSCNAMERecordAttributes(&record),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "name", "terraform"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "value", "foo.test.local."),
+				),
+			},
+			{
+				Config: fmt.Sprintf(testAccCheckWinDNSCNAMERecordConfig_new_value, domain),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckWinDNSRecordExists("windows-dns_record.foobar", &record),
+					testAccCheckWinDNSCNAMERecordAttributesUpdated(&record),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "name", "terraform"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar", "value", "bar.test.local."),
 				),
 			},
 		},
@@ -88,29 +135,23 @@ func TestAccWinDNSRecord_Multiple(t *testing.T) {
 				Config: fmt.Sprintf(testAccCheckWinDNSRecordConfig_multiple, domain, domain, domain),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckWinDNSRecordExists("windows-dns_record.foobar1", &record),
-					testAccCheckWinDNSRecordAttributes(&record),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar1", "name", "terraform1"),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar1", "domain", domain),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar1", "value", "10.99.0.10"),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar2", "name", "terraform2"),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar2", "domain", domain),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar2", "value", "10.99.1.10"),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar3", "name", "terraform3"),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar3", "domain", domain),
-					resource.TestCheckResourceAttr(
-						"windows-dns_record.foobar3", "value", "10.99.2.10"),
+					testAccCheckWinDNSARecordAttributes(&record),
+					testAccCheckWinDNSRecordExists("windows-dns_record.foobar2", &record),
+					testAccCheckWinDNSRecordExists("windows-dns_record.foobar3", &record),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar1", "name", "terraform1"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar1", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar1", "value", "10.99.0.10"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar2", "name", "terraform2"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar2", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar2", "value", "10.99.1.10"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar3", "name", "terraform3"),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar3", "domain", domain),
+					resource.TestCheckResourceAttr("windows-dns_record.foobar3", "value", "10.99.2.10"),
 				),
 			},
 		},
 	})
+
 }
 
 func testAccCheckWinDNSRecordDestroy(s *terraform.State) error {
@@ -137,7 +178,7 @@ func testAccCheckWinDNSRecordDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckWinDNSRecordAttributes(record *dns.Record) resource.TestCheckFunc {
+func testAccCheckWinDNSARecordAttributes(record *dns.Record) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
 		if record.Value != "10.99.0.10" {
@@ -148,10 +189,32 @@ func testAccCheckWinDNSRecordAttributes(record *dns.Record) resource.TestCheckFu
 	}
 }
 
-func testAccCheckWinDNSRecordAttributesUpdated(record *dns.Record) resource.TestCheckFunc {
+func testAccCheckWinDNSARecordAttributesUpdated(record *dns.Record) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
 		if record.Value != "10.99.99.99" {
+			return fmt.Errorf("Bad value: %s", record.Value)
+		}
+
+		return nil
+	}
+}
+
+func testAccCheckWinDNSCNAMERecordAttributes(record *dns.Record) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+
+		if record.Value != "foo.test.local." {
+			return fmt.Errorf("Bad value: %s", record.Value)
+		}
+
+		return nil
+	}
+}
+
+func testAccCheckWinDNSCNAMERecordAttributesUpdated(record *dns.Record) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+
+		if record.Value != "bar.test.local." {
 			return fmt.Errorf("Bad value: %s", record.Value)
 		}
 
@@ -191,7 +254,7 @@ func testAccCheckWinDNSRecordExists(n string, record *dns.Record) resource.TestC
 	}
 }
 
-const testAccCheckWinDNSRecordConfig_basic = `
+const testAccCheckWinDNSARecordConfig_basic = `
 resource "windows-dns_record" "foobar" {
 	domain = "%s"
 	name = "terraform"
@@ -200,12 +263,30 @@ resource "windows-dns_record" "foobar" {
 	ttl = "1h0m0s"
 }`
 
-const testAccCheckWinDNSRecordConfig_new_value = `
+const testAccCheckWinDNSARecordConfig_new_value = `
 resource "windows-dns_record" "foobar" {
 	domain = "%s"
 	name = "terraform"
 	value = "10.99.99.99"
 	type = "A"
+	ttl = "5m0s"
+}`
+
+const testAccCheckWinDNSCNAMERecordConfig_basic = `
+resource "windows-dns_record" "foobar" {
+	domain = "%s"
+	name = "terraform"
+	value = "foo.test.local."
+	type = "CNAME"
+	ttl = "1h0m0s"
+}`
+
+const testAccCheckWinDNSCNAMERecordConfig_new_value = `
+resource "windows-dns_record" "foobar" {
+	domain = "%s"
+	name = "terraform"
+	value = "bar.test.local."
+	type = "CNAME"
 	ttl = "5m0s"
 }`
 
