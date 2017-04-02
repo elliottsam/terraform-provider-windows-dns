@@ -17,6 +17,10 @@ func resourceDNSRecord() *schema.Resource {
 		Read:   resourceDNSRecordRead,
 		Update: resourceDNSRecordUpdate,
 		Delete: resourceDNSRecordDelete,
+		Exists: resourceDNSRecordExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"domain": &schema.Schema{
@@ -93,10 +97,6 @@ func resourceDNSRecordRead(d *schema.ResourceData, m interface{}) error {
 		ID:      d.Id(),
 	}
 
-	if !client.RecordExist(rec) {
-		return fmt.Errorf("Record not found: %v", rec.Name)
-	}
-
 	if rec.ID != "" {
 		rec, err = client.ReadRecordfromID(rec.ID)
 		if err != nil {
@@ -120,6 +120,7 @@ func resourceDNSRecordRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("type", rec.Type)
 	d.Set("value", rec.Value)
 	d.Set("ttl", ttl.String())
+	d.SetId(rec.ID)
 
 	return nil
 }
@@ -174,13 +175,29 @@ func resourceDNSRecordDelete(d *schema.ResourceData, m interface{}) error {
 		Value:   d.Get("value").(string),
 	}
 
-	if !client.RecordExist(rec) {
-		return fmt.Errorf("Record not found: %s", rec.Name)
-	}
-
 	if err := client.DeleteRecord(rec); err != nil {
 		return fmt.Errorf("Error deleting record: %v", err)
 	}
 
 	return nil
+}
+
+func resourceDNSRecordExists(d *schema.ResourceData, m interface{}) (bool, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	client := m.(*dns.Client)
+
+	rec := dns.Record{
+		Dnszone: d.Get("domain").(string),
+		Name:    d.Get("name").(string),
+		Type:    d.Get("type").(string),
+		Value:   d.Get("value").(string),
+		ID:      d.Id(),
+	}
+
+	if !client.RecordExist(rec) {
+		return false, fmt.Errorf("Record not found: %v", rec)
+	}
+
+	return true, nil
 }

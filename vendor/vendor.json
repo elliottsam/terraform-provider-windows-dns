@@ -171,22 +171,10 @@
 			"revisionTime": "2016-10-29T20:57:26Z"
 		},
 		{
-			"checksumSHA1": "P7qRQjzl8cbdS0mxKqFSfsVewns=",
-			"path": "github.com/elliottsam/winrm-dns-client",
-			"revision": "a40e98c6d8881097609f83eea019575dd21deb3a",
-			"revisionTime": "2017-03-26T13:04:51Z"
-		},
-		{
-			"checksumSHA1": "9Yi2BwpTWe6F8pVyNO/GkTbaM+Q=",
-			"path": "github.com/elliottsam/winrm-dns-client/cmd",
-			"revision": "a40e98c6d8881097609f83eea019575dd21deb3a",
-			"revisionTime": "2017-03-26T13:04:51Z"
-		},
-		{
-			"checksumSHA1": "MnLCjyXVP967zkwAJVK8DzQMUD4=",
+			"checksumSHA1": "/7A0V6PmQ/sozJ4261Ia34alHwA=",
 			"path": "github.com/elliottsam/winrm-dns-client/dns",
-			"revision": "a40e98c6d8881097609f83eea019575dd21deb3a",
-			"revisionTime": "2017-03-26T13:04:51Z"
+			"revision": "7896bf99e01808af6c427a6d91562d8f6090cd86",
+			"revisionTime": "2017-04-02T11:19:07Z"
 		},
 		{
 			"checksumSHA1": "D1iQuhVl+JB2+WCjsspnlXQCPnM=",

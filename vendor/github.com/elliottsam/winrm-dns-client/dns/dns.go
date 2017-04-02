@@ -90,9 +90,9 @@ func (c *Client) ReadRecordfromID(recID string) (Record, error) {
 	if err != nil {
 		return Record{}, fmt.Errorf("Reading record: %v", err)
 	}
-	for i, v := range result {
+	for _, v := range result {
 		if v.ID == recID {
-			return result[i], nil
+			return v, nil
 		}
 	}
 	return Record{}, fmt.Errorf("Record not found: %v", recID)
@@ -252,6 +252,7 @@ func (c *Client) RecordExist(rec Record) bool {
 	var records []Record
 
 	if rec.ID != "" {
+		rec.Value = strings.Split(rec.ID, "|")[2]
 		resp, err := c.ReadRecordfromID(rec.ID)
 		if err != nil {
 			return false
