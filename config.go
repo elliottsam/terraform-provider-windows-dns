@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/elliottsam/winrm-dns-client/dns"
+	"github.com/Bourne-ID/winrm-dns-client/dns"
 )
 
 type config struct {

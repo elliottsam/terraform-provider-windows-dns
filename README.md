@@ -49,9 +49,9 @@ resource "windows-dns_record" "test99" {
 
 The library this uses can be found [here][1]
 
-[1]: https://github.com/elliottsam/winrm-dns-client
+[1]: https://github.com/Bourne-ID/winrm-dns-client
 
 To update to support a new version of Terraform update govendor with the following command
 ```
-for i in $(govendor list | grep terraform | grep -v elliottsam | awk '{print $2}'); do govendor fetch "${i}@v0.9.1"; done
+for i in $(govendor list | grep terraform | grep -v Bourne-ID | awk '{print $2}'); do govendor fetch "${i}@v0.9.1"; done
 ```

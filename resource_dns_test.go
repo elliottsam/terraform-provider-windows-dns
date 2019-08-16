@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/elliottsam/winrm-dns-client/dns"
+	"github.com/Bourne-ID/winrm-dns-client/dns"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 )

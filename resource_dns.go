@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/elliottsam/winrm-dns-client/dns"
+	"github.com/Bourne-ID/winrm-dns-client/dns"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
