@@ -45,3 +45,24 @@ func testAccPreCheck(t *testing.T) {
 		t.Fatal("WINRM_DOMAIN must be set for tests")
 	}
 }
+
+func testPorts(t *testing.T) {
+	tables := []struct {
+		p int
+		https bool
+		e int
+	}{
+		{1234, false, 1234},
+		{1234, true, 1234},
+		{0, false, 5985},
+		{0, true, 5986},
+	}
+	
+for _, table := range tables {
+	derivedPort := derivePort(table.p, table.https)
+	if (derivedPort != table.e) {
+		t.Errorf("Port test for port %d with HTTPS %t returned %d instead of %d", table.p, table.https, derivedPort, table.e)
+	}
+}
+
+}

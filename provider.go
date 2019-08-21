@@ -40,7 +40,7 @@ func Provider() *schema.Provider {
 			"port": {
 				Type:		schema.TypeInt,
 				Optional:	true,
-				DefaultFunc: schema.EnvDefaultFunc("WINRM_PORT", nil),
+				DefaultFunc: schema.EnvDefaultFunc("WINRM_PORT", 0),
 			},
 		},
 
@@ -53,16 +53,7 @@ func Provider() *schema.Provider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	var port int
-	if  d.Get("port") == nil || d.Get("port") == 0 {
-		if d.Get("https").(bool) {
-			port = 5986
-		} else {
-			port = 5985
-		}
-	} else {
-		port = d.Get("port").(int)
-	}
+	port := derivePort(d.Get("port").(int), d.Get("https").(bool))
 
 	config := config{
 		ServerName: d.Get("server").(string),
@@ -74,4 +65,18 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	}
 
 	return config.Client()
+}
+
+func derivePort(definedPort int, https bool) (int) {
+	var port int
+	if  definedPort == 0 {
+		if https {
+			port = 5986
+		} else {
+			port = 5985
+		}
+	} else {
+		port = definedPort
+	}
+	return port
 }
