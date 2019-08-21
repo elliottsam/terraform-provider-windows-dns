@@ -14,7 +14,7 @@ var testAccProvider *schema.Provider
 func init() {
 	testAccProvider = Provider()
 	testAccProviders = map[string]terraform.ResourceProvider{
-		"windows-dns": testAccProvider,
+		"windowsdns": testAccProvider,
 	}
 }
 

@@ -1,2 +1,4 @@
 .idea/
 DNSTerraform.code-workspace
+vendor/
+terraorm-provider-windows-dns

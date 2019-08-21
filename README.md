@@ -3,8 +3,10 @@
 This enables Terraform to control Microsoft DNS servers, it utilises a Go library that implements WinRM and 
 dynamically creates PowerShell scripts to make changes required.
 
-At present it only supports A and CNAME records, this is because of my current requirements for needing this.
+At present it only supports A and CNAME records over HTTP and HTTPS. 
 
+## Incompatibility with Parent Fork
+Changes to this fork will break any Terraform usage on the parent fork - specifically the ID field for Terraform has changed to help detect drift and be more flexible in a large environment.ds
 
 ## Usage
 ### Provider configuration
